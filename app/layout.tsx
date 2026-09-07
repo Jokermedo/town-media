@@ -1,49 +1,23 @@
 import { Analytics } from '@vercel/analytics/next'
+import { Cairo } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
+const cairo = Cairo({ subsets: ['arabic', 'latin'], variable: '--font-arabic' })
+
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
-  icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
-  },
+  title: 'Town Media — نصنع حضورك بشكل استثنائي',
+  description: 'قوالب رقمية مصممة بعناية وخبرة إبداعية تساعد علامتك على أن تُرى وتُفهم وتُتذكر.',
+  generator: 'Town Media',
+  icons: { icon: '/town-media-logo.png', apple: '/town-media-logo.png' },
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'light dark',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
+  colorScheme: 'dark',
+  themeColor: '#070a14',
+  userScalable: false,
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
-  return (
-    <html lang="en">
-      <body className="antialiased">
-        {children}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
-      </body>
-    </html>
-  )
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return <html lang="ar" dir="rtl" className="bg-background"><body className={`${cairo.variable} antialiased`}>{children}{process.env.NODE_ENV === 'production' && <Analytics />}</body></html>
 }
