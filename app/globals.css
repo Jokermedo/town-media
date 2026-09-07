@@ -17,8 +17,6 @@
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -26,16 +24,19 @@
   --color-cyan: #16d5ff;
   --font-sans: var(--font-arabic), 'Tahoma', sans-serif;
   --font-mono: 'SFMono-Regular', Consolas, monospace;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
 }
 
-:root { color-scheme: dark; --background: #070a14; --foreground: #f7f9ff; --card: #0e1323; --card-foreground: #f7f9ff; --popover: #0e1323; --popover-foreground: #f7f9ff; --primary: #f7f9ff; --primary-foreground: #070a14; --secondary: #151b2e; --secondary-foreground: #f7f9ff; --muted: #151b2e; --muted-foreground: #8e98ad; --accent: #151b2e; --accent-foreground: #f7f9ff; --border: rgba(255,255,255,.1); --input: rgba(255,255,255,.12); --ring: #16d5ff; }
-
+:root { color-scheme: dark; --background: #070a14; --foreground: #f7f9ff; --card: #0e1323; --card-foreground: #f7f9ff; --popover: #0e1323; --popover-foreground: #f7f9ff; --primary: #f7f9ff; --primary-foreground: #070a14; --secondary: #151b2e; --secondary-foreground: #f7f9ff; --muted: #151b2e; --muted-foreground: #8e98ad; --border: rgba(255,255,255,.1); --input: rgba(255,255,255,.12); --ring: #16d5ff; }
 * { box-sizing: border-box; }
 html { background: #070a14; scroll-behavior: smooth; }
-body { margin: 0; background: #070a14; color: #f7f9ff; font-family: Arial, Tahoma, sans-serif; }
+body { margin: 0; background: #070a14; color: #f7f9ff; font-family: var(--font-arabic), Tahoma, sans-serif; }
 button, input, textarea { font: inherit; }
 button { cursor: pointer; }
 .hero-gradient { background: linear-gradient(100deg, #16d5ff 5%, #4268ff 48%, #9b55ff 95%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.safe-top { padding-top: max(0.75rem, env(safe-area-inset-top)); }
+.safe-bottom { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
+.sheet-in { animation: sheet-in 240ms ease-out; }
+@keyframes sheet-in { from { transform: translateY(100%); opacity: .6; } to { transform: translateY(0); opacity: 1; } }
 ::selection { background: rgba(22,213,255,.28); color: white; }
