@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import Image from 'next/image'
-import { ArrowLeft, Check, ChevronLeft, Home, Layers3, Menu, MessageCircle, Play, Sparkles, X } from 'lucide-react'
+import { ArrowLeft, Check, ChevronLeft, Home, Layers3, Menu, MessageCircle, Play, Send, Sparkles, X } from 'lucide-react'
 
 const categories = ['الكل', 'مطاعم', 'متاجر', 'شركات', 'إبداع']
 const templates = [
@@ -18,12 +18,34 @@ const steps = [
   ['03', 'أطلق حضورك', 'نحوّل فكرتك إلى حضور رقمي يُتذكر.'],
 ]
 
+type ChatMessage = { id: number; text: string; from: 'team' | 'user'; time: string }
+
+const starterMessages: ChatMessage[] = [
+  { id: 1, from: 'team', text: 'أهلاً بك في تاون ميديا. كيف نقدر نساعدك اليوم؟', time: 'الآن' },
+  { id: 2, from: 'team', text: 'هذه محادثة داخلية تجريبية، ويمكنك ترك فكرتك هنا بسهولة.', time: 'الآن' },
+]
+
 export default function Page() {
   const [category, setCategory] = useState('الكل')
   const [selected, setSelected] = useState<(typeof templates)[number] | null>(null)
   const [submitted, setSubmitted] = useState(false)
+  const [chatOpen, setChatOpen] = useState(false)
+  const [chatText, setChatText] = useState('')
+  const [messages, setMessages] = useState<ChatMessage[]>(starterMessages)
+  const [unread, setUnread] = useState(0)
   const visible = useMemo(() => category === 'الكل' ? templates : templates.filter((item) => item.category === category), [category])
   const go = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  const openChat = () => { setChatOpen(true); setUnread(0) }
+  const sendMessage = (text = chatText) => {
+    const cleanText = text.trim()
+    if (!cleanText) return
+    setMessages((current) => [...current, { id: Date.now(), from: 'user', text: cleanText, time: 'الآن' }])
+    setChatText('')
+    window.setTimeout(() => {
+      setMessages((current) => [...current, { id: Date.now() + 1, from: 'team', text: 'وصلت فكرتك. سنرتبها معك هنا ونقترح الخطوة التالية.', time: 'الآن' }])
+      if (!chatOpen) setUnread((current) => current + 1)
+    }, 700)
+  }
 
   return (
     <main dir="rtl" className="min-h-screen overflow-x-hidden bg-background pb-24 text-foreground">
@@ -53,7 +75,9 @@ export default function Page() {
 
       <section id="contact" className="px-5 py-16"><div className="mx-auto max-w-md rounded-[2rem] border border-white/10 bg-navy p-6"><p className="text-xs font-bold text-cyan">خطوتك الأولى تبدأ هنا</p><h2 className="mt-3 text-3xl font-bold leading-tight text-white">جاهز لنصنع<br /><span className="hero-gradient">شيئاً استثنائياً؟</span></h2>{submitted ? <div className="mt-8 rounded-2xl border border-cyan/30 bg-cyan/10 p-6 text-center"><div className="mx-auto flex size-11 items-center justify-center rounded-full bg-cyan text-navy"><Check className="size-5" /></div><h3 className="mt-4 font-bold text-white">وصلتنا رسالتك</h3><p className="mt-2 text-sm text-white/55">سنتواصل معك قريباً.</p></div> : <form onSubmit={(event) => { event.preventDefault(); setSubmitted(true) }} className="mt-7 flex flex-col gap-3"><input required aria-label="الاسم الكامل" placeholder="الاسم الكامل" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-cyan" /><input required type="email" aria-label="البريد الإلكتروني" placeholder="البريد الإلكتروني" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-cyan" /><textarea required aria-label="عن المشروع" placeholder="أخبرنا عن مشروعك" rows={3} className="resize-none rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-cyan" /><button className="rounded-2xl bg-white px-4 py-4 text-sm font-bold text-navy">أرسل طلبك</button></form>}</div></section>
 
-      <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#080b18]/90 px-5 pb-3 pt-2 backdrop-blur-2xl"><div className="mx-auto flex max-w-md items-center justify-around"><button onClick={() => go('top')} className="flex flex-col items-center gap-1 text-cyan"><Home className="size-5" /><span className="text-[10px]">الرئيسية</span></button><button onClick={() => go('templates')} className="flex flex-col items-center gap-1 text-white/50"><Layers3 className="size-5" /><span className="text-[10px]">القوالب</span></button><button onClick={() => go('how-it-works')} className="flex flex-col items-center gap-1 text-white/50"><Menu className="size-5" /><span className="text-[10px]">كيف نعمل</span></button><button onClick={() => go('contact')} className="flex flex-col items-center gap-1 text-white/50"><MessageCircle className="size-5" /><span className="text-[10px]">تواصل</span></button></div></nav>
+      <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#080b18]/90 px-5 pb-3 pt-2 backdrop-blur-2xl"><div className="mx-auto flex max-w-md items-center justify-around"><button onClick={() => go('top')} className="flex flex-col items-center gap-1 text-cyan"><Home className="size-5" /><span className="text-[10px]">الرئيسية</span></button><button onClick={() => go('templates')} className="flex flex-col items-center gap-1 text-white/50"><Layers3 className="size-5" /><span className="text-[10px]">القوالب</span></button><button onClick={() => go('how-it-works')} className="flex flex-col items-center gap-1 text-white/50"><Menu className="size-5" /><span className="text-[10px]">كيف نعمل</span></button><button onClick={openChat} className="relative flex flex-col items-center gap-1 text-white/50"><MessageCircle className="size-5" /><span className="text-[10px]">تواصل</span>{unread > 0 && <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-cyan text-[9px] font-bold text-navy">{unread}</span>}</button></div></nav>
+
+      {chatOpen && <div className="fixed inset-0 z-50 bg-background" role="dialog" aria-modal="true" aria-label="المحادثة الداخلية"><div className="safe-top flex h-20 items-center justify-between border-b border-white/10 px-5"><button onClick={() => setChatOpen(false)} aria-label="العودة" className="flex size-10 items-center justify-center rounded-full bg-white/5 text-white"><ChevronLeft className="size-5" /></button><div className="text-center"><h2 className="text-sm font-bold text-white">مساحتك مع تاون ميديا</h2><p className="mt-1 flex items-center justify-center gap-1.5 text-[11px] text-cyan"><span className="size-1.5 rounded-full bg-cyan" />متصل الآن</p></div><div className="size-10 rounded-xl border border-white/10 bg-white/5 p-1"><Image src="/town-media-logo.png" alt="تاون ميديا" width={32} height={32} className="size-full rounded-lg object-cover" /></div></div><div className="flex h-[calc(100dvh-5rem)] flex-col"><div className="flex-1 overflow-y-auto px-5 py-6"><div className="mx-auto mb-6 max-w-xs rounded-full border border-cyan/15 bg-cyan/5 px-4 py-2 text-center text-[11px] text-cyan/80">محادثة داخلية خاصة بالمشروع</div><div className="mx-auto flex max-w-md flex-col gap-3">{messages.map((message) => <div key={message.id} className={`flex ${message.from === 'user' ? 'justify-start' : 'justify-end'}`}><div className={`max-w-[82%] rounded-[1.35rem] px-4 py-3 ${message.from === 'user' ? 'rounded-br-md bg-white text-navy' : 'rounded-bl-md border border-white/10 bg-card text-white'}`}><p className="text-sm leading-6">{message.text}</p><span className={`mt-1 block text-[10px] ${message.from === 'user' ? 'text-navy/45' : 'text-white/35'}`}>{message.time}</span></div></div>)}</div></div><div className="border-t border-white/10 bg-card/80 px-4 pb-3 pt-3 backdrop-blur-xl"><div className="no-scrollbar mb-3 flex gap-2 overflow-x-auto"><button onClick={() => sendMessage('أريد اختيار قالب مناسب')} className="shrink-0 rounded-full border border-white/10 px-3 py-2 text-[11px] text-white/65">اختيار قالب مناسب</button><button onClick={() => sendMessage('أريد تصميم مخصص')} className="shrink-0 rounded-full border border-white/10 px-3 py-2 text-[11px] text-white/65">تصميم مخصص</button><button onClick={() => sendMessage('أريد معرفة الخطوات')} className="shrink-0 rounded-full border border-white/10 px-3 py-2 text-[11px] text-white/65">ما هي الخطوات؟</button></div><form onSubmit={(event) => { event.preventDefault(); sendMessage() }} className="flex items-end gap-2 rounded-2xl border border-white/10 bg-white/5 p-2"><textarea value={chatText} onChange={(event) => setChatText(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing && event.keyCode !== 229) { event.preventDefault(); sendMessage() } }} rows={1} aria-label="اكتب رسالتك" placeholder="اكتب رسالتك هنا..." className="max-h-24 min-h-10 flex-1 resize-none bg-transparent px-2 py-2 text-sm text-white outline-none placeholder:text-white/35" /><button type="submit" aria-label="إرسال الرسالة" className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white text-navy"><Send className="size-4" /></button></form></div></div></div>}
 
       {selected && <div className="fixed inset-0 z-50 flex items-end bg-navy/70 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={`معاينة ${selected.title}`} onClick={() => setSelected(null)}><div className="sheet-in relative w-full rounded-t-[2rem] border-t border-white/15 bg-card p-5 pb-8" onClick={(event) => event.stopPropagation()}><button onClick={() => setSelected(null)} aria-label="إغلاق" className="absolute left-5 top-5 flex size-9 items-center justify-center rounded-full bg-white/10 text-white"><X className="size-4" /></button><div className="relative mt-8 aspect-video overflow-hidden rounded-2xl"><Image src={selected.image} alt={`معاينة ${selected.title}`} fill className="object-cover" /></div><h3 className="mt-5 text-2xl font-bold text-white">قالب {selected.title}</h3><p className="mt-1 text-sm text-muted-foreground">{selected.tone} · مصمم ليبدأ معك</p><button onClick={() => { setSelected(null); go('contact') }} className="mt-6 w-full rounded-2xl bg-white py-4 text-sm font-bold text-navy">أريد هذا القالب <ArrowLeft className="mr-2 inline size-4" /></button></div></div>}
     </main>
